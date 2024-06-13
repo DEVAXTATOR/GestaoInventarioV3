@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GestaoInventarioV3.Data;
 using GestaoInventarioV3.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GestaoInventarioV3.Controllers
 {
@@ -15,23 +17,20 @@ namespace GestaoInventarioV3.Controllers
             _context = context;
         }
 
-        // GET: Produtos
         public async Task<IActionResult> Index()
         {
             var produtos = await _context.Produtos.Include(p => p.Categoria).ToListAsync();
             return View(produtos);
         }
 
-        // GET: Produtos/Create
         public IActionResult Create()
         {
+            ViewBag.Categorias = new SelectList(_context.Categorias, "CategoriaId", "Nome");
             return View();
         }
 
-        // POST: Produtos/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome,Preco,CategoriaId")] Produto produto)
+        public async Task<IActionResult> Create([Bind("ProdutoId, Nome, CategoriaId")] Produto produto)
         {
             if (ModelState.IsValid)
             {
@@ -39,10 +38,10 @@ namespace GestaoInventarioV3.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categorias = new SelectList(_context.Categorias, "CategoriaId", "Nome", produto.CategoriaId);
             return View(produto);
         }
 
-        // GET: Produtos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -55,13 +54,12 @@ namespace GestaoInventarioV3.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Categorias = new SelectList(_context.Categorias, "CategoriaId", "Nome", produto.CategoriaId);
             return View(produto);
         }
 
-        // POST: Produtos/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProdutoId,Nome,Preco,CategoriaId")] Produto produto)
+        public async Task<IActionResult> Edit(int id, [Bind("ProdutoId, Nome, CategoriaId")] Produto produto)
         {
             if (id != produto.ProdutoId)
             {
@@ -77,7 +75,7 @@ namespace GestaoInventarioV3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProdutoExists(produto.ProdutoId))
+                    if (!_context.Produtos.Any(e => e.ProdutoId == id))
                     {
                         return NotFound();
                     }
@@ -88,10 +86,10 @@ namespace GestaoInventarioV3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categorias = new SelectList(_context.Categorias, "CategoriaId", "Nome", produto.CategoriaId);
             return View(produto);
         }
 
-        // GET: Produtos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -100,29 +98,22 @@ namespace GestaoInventarioV3.Controllers
             }
 
             var produto = await _context.Produtos
+                .Include(p => p.Categoria)
                 .FirstOrDefaultAsync(m => m.ProdutoId == id);
             if (produto == null)
             {
                 return NotFound();
             }
-
             return View(produto);
         }
 
-        // POST: Produtos/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
             _context.Produtos.Remove(produto);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProdutoExists(int id)
-        {
-            return _context.Produtos.Any(e => e.ProdutoId == id);
         }
     }
 }
