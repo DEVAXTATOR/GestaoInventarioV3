@@ -1,8 +1,17 @@
-﻿using GestaoInventarioV3.Models;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-public class Categoria
+namespace GestaoInventarioV3.Models
 {
-    public int CategoriaId { get; set; }
-    public string Nome { get; set; } = string.Empty; // Inicializando com string vazia
-    public List<Produto> Produtos { get; set; } = new List<Produto>(); // Inicialização direta
+    public class Categoria
+    {
+        public int CategoriaId { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Nome { get; set; }
+
+        // Relação um-para-muitos com Produto
+        public List<Produto> Produtos { get; set; } = new List<Produto>();
+    }
 }

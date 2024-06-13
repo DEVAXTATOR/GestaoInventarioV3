@@ -1,0 +1,32 @@
+@model IEnumerable<GestaoInventarioV3.Models.Produto>
+
+<h1>Produtos</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Categoria</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var produto in Model)
+    {
+        <tr>
+            <td>@produto.ProdutoId</td>
+            <td>@produto.Nome</td>
+            <td>@produto.Preco.ToString("C")</td>
+            <td>@produto.Categoria.Nome</td>
+            <td>
+                <a href="/Produtos/Edit/@produto.ProdutoId" class="btn btn-primary">Editar</a>
+                <a href="/Produtos/Delete/@produto.ProdutoId" class="btn btn-danger">Excluir</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a href="/Produtos/Create" class="btn btn-success">Criar Novo Produto</a>

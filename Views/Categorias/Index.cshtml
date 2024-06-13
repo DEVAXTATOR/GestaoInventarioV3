@@ -1,0 +1,28 @@
+@model IEnumerable<GestaoInventarioV3.Models.Categoria>
+
+<h1>Categorias</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var categoria in Model)
+    {
+        <tr>
+            <td>@categoria.CategoriaId</td>
+            <td>@categoria.Nome</td>
+            <td>
+                <a href="/Categorias/Edit/@categoria.CategoriaId" class="btn btn-primary">Editar</a>
+                <a href="/Categorias/Delete/@categoria.CategoriaId" class="btn btn-danger">Excluir</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a href="/Categorias/Create" class="btn btn-success">Criar Nova Categoria</a>
